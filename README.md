@@ -1,8 +1,5 @@
-*Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
-
----
-
 # SVELTE TODO APP
+
 
 Este proyecto es una TODO-APP hecha en [Svelte](https://svelte.dev).
 
@@ -13,7 +10,8 @@ npx degit sveltejs/template svelte-todo-app
 cd svelte--todo-app
 ```
 
-*Debes tener instalado [Node.js](https://nodejs.org) installed.*
+*Debes tener instalado [Node.js](https://nodejs.org).*
+
 
 
 ## Get started
