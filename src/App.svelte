@@ -12,19 +12,19 @@
     {
       id: 1,
       completed: false,
-      title: 'Go to Store',
+      title: 'Recibirme',
       editing: false,
     },
     {
       id: 2,
       completed: false,
-      title: 'Finish Svelte Screencast',
+      title: 'Lavar los platos',
       editing: false,
     },
     {
       id: 3,
       completed: false,
-      title: 'Take over world',
+      title: 'Ir a la Luna',
       editing: false,
     },
 	];
