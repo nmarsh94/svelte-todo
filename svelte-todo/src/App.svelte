@@ -2,97 +2,82 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
   import { fly } from 'svelte/transition';
+
+  
 	const ENTER_KEY = 13;
   const ESCAPE_KEY = 27;
   let beforeEditCache = '';
 	let currentFilter = 'all';
 	let newTodo = '';
-	let tempId = 4;
-	let todos = [
-    {
-      id: 1,
-      completed: false,
-      title: 'Recibirme',
-      editing: false,
-    },
-    {
-      id: 2,
-      completed: false,
-      title: 'Lavar los platos',
-      editing: false,
-    },
-    {
-      id: 3,
-      completed: false,
-      title: 'Ir a la Luna',
-      editing: false,
-    },
-	];
-	function addTodo(event) {
-		if (event.key === 'Enter') {
-			// todos = [...todos, {
-      //   id: tempId,
-      //   completed: false,
-      //   title: newTodo
-      // }];
-			todos.push({
-				id: tempId,
-				completed: false,
-				title: newTodo,
-				editing: false
-			})
-			todos = todos;
-			tempId = tempId + 1;
-			newTodo = '';
-		}
-	}
-	function editTodo(todo) {
-    beforeEditCache = todo.title;
-		todo.editing = true;
-		todos = todos;
-	}
-	function doneEdit(todo) {
-		if (todo.title.trim() === '') {
-      todo.title = beforeEditCache
-    }
-    todo.editing = false;
-    todos = todos;
-	}
-	function doneEditKeydown(todo, event) {
-		if (event.key === 'Enter') {
-      doneEdit(todo);
-    }
-    if (event.key === 'Escape') {
-      todo.title = beforeEditCache;
-      todo.editing = false;
-      todos = todos;
-    }
-	}
-	function deleteTodo(id) {
-		todos = todos.filter(todo => todo.id !== id);
-	}
-	function clearCompleted() {
-		todos = todos.filter(todo => !todo.completed);
-	}
-	function checkAllTodos(event) {
-		todos.forEach(todo => todo.completed = event.target.checked);
-		todos = todos;
-	}
-	function updateFilter(filter) {
-		currentFilter = filter;
-	}
-	onMount(async () => {
-		const res = await fetch('https://api.kanye.rest');
-		const response = await res.json();
-		console.log(response.quote);
-	});
-	$: todosRemaining = filteredTodos.filter(todo => !todo.completed).length;
-	$: filteredTodos = currentFilter === 'all'
-		? todos
-		: currentFilter === 'completed'
-			? todos.filter(todo => todo.completed)
-			: todos.filter(todo => !todo.completed);
+  let tempId = 4;
+  let NOTSTARTED = 'Not Started';
+  let INPROGRESS = 'In Progress';
+  let COMPLETED = 'Completed';
+  let STATUS_LIST={NOTSTARTED,INPROGRESS,COMPLETED};
+
+
+
+  let myTodos = [];
+
+
+  async function getItems() {
+    const response = await fetch("http://localhost:5000/items/all")
+
+    const todo = await response.json();
+
+    myTodos = todo.items
+    console.log(myTodos)
+  }
+
+  onMount(async()=>{
+    getItems();
+
+  });
+
+  let todos = [];
+  let input = "";
+
+  
+  async function addItem() {
+    let data = { item : input }
+    const res = await fetch("http://localhost:5000/item/new", {
+      method: 'POST',
+      headers: { 'Content-Type' : 'application/json;charset=utf-8' },
+      body: JSON.stringify(data)
+    })
+
+    const json = await res.json()
+    let result = JSON.stringify(json)
+    console.log(result);
+
+    getItems();
+  }
+
+  function addTodo() {
+    if (input)
+      addItem()
+    input = "";
+  }
+
+  
+
+  async function removeTodo(id) {
+    let data = { itemid : id }
+    const res = await fetch("http://localhost:5000/item/remove", {
+      method: 'DELETE',
+      headers: { 'Content-Type' : 'application/json;charset=utf-8' },
+      body: JSON.stringify(data)
+    })
+
+    getItems();
+  }     
+
 </script>
+
+
+
+
+
 
 <style lang="scss">
   .container {
