@@ -29,10 +29,6 @@
     console.log(myTodos)
   }
 
-  onMount(async()=>{
-    getItems();
-
-  });
 
   let todos = [];
   let input = "";
@@ -57,7 +53,53 @@
     if (input)
       addItem()
     input = "";
+
+    if (event.key === 'Enter') {
+			todos.push({
+				id: tempId,
+				completed: false,
+				title: newTodo,
+				editing: false
+			})
+			todos = todos;
+			tempId = tempId + 1;
+			newTodo = '';
+		}
   }
+
+  function editTodo(todo) {
+    beforeEditCache = todo.title;
+		todo.editing = true;
+		todos = todos;
+	}
+	function doneEdit(todo) {
+		if (todo.title.trim() === '') {
+      todo.title = beforeEditCache
+    }
+    todo.editing = false;
+    todos = todos;
+	}
+	function doneEditKeydown(todo, event) {
+		if (event.key === 'Enter') {
+      doneEdit(todo);
+    }
+    if (event.key === 'Escape') {
+      todo.title = beforeEditCache;
+      todo.editing = false;
+      todos = todos;
+    }
+	}
+
+  function clearCompleted() {
+		todos = todos.filter(todo => !todo.completed);
+	}
+	function checkAllTodos(event) {
+		todos.forEach(todo => todo.completed = event.target.checked);
+		todos = todos;
+	}
+	function updateFilter(filter) {
+		currentFilter = filter;
+	}
 
   
 
@@ -69,8 +111,27 @@
       body: JSON.stringify(data)
     })
 
+    todos = todos.filter(todo => todo.id !== id);
     getItems();
   }     
+
+
+  onMount(async()=>{
+    getItems();
+    const res = await fetch('https://api.kanye.rest');
+		const response = await res.json();
+		console.log(response.quote);
+  });
+
+	$: todosRemaining = filteredTodos.filter(todo => !todo.completed).length;
+	$: filteredTodos = currentFilter === 'all'
+		? todos
+		: currentFilter === 'completed'
+			? todos.filter(todo => todo.completed)
+			: todos.filter(todo => !todo.completed);
+
+
+
 
 </script>
 
